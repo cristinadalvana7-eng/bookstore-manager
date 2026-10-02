@@ -19,4 +19,41 @@ export class BookRepository {
 
     return result.rows;
   }
+
+  async findById(id: number): Promise<BookData | null> {
+    const result = await database.query(
+      `SELECT id, title, author_id AS "authorId", available
+       FROM books
+       WHERE id = $1`,
+      [id]
+    );
+
+    return result.rows[0] ?? null;
+  }
+
+  async update(book: BookData): Promise<void> {
+    await database.query(
+      `UPDATE books
+       SET title = $1, author_id = $2
+       WHERE id = $3`,
+      [book.title, book.authorId, book.id]
+    );
+  }
+
+  async delete(id: number): Promise<void> {
+    await database.query(
+      `DELETE FROM books
+       WHERE id = $1`,
+      [id]
+    );
+  }
+
+  async updateAvailability(id: number, available: boolean): Promise<void> {
+    await database.query(
+      `UPDATE books
+       SET available = $1
+       WHERE id = $2`,
+      [available, id]
+    );
+  }
 }
